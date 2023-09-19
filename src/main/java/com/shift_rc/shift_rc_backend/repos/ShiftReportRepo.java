@@ -18,6 +18,6 @@ public interface ShiftReportRepo extends JpaRepository<ShiftReport, Long>{
     @Query(value = "SELECT * FROM shift_reports s WHERE s.user_id = :user_id ORDER BY start_date DESC", nativeQuery = true)
     Set<ShiftReport> findByUserIdDesc(@Param("user_id") Long user_id);
 
-    @Query(value = "SELECT SUM(s.total_hours_in_minutes) FROM shift_reports s WHERE s.user_id = :user_id AND s.start_date BETWEEN DATE :startDate AND :endDate", nativeQuery = true)
-    Long getTotalHoursBetweenDates(@Param("user_id") Long user_id, @Param("startDate") String startDate, @Param("endDate") String endDate);
+    @Query(value = "SELECT SUM(s.total_hours_in_minutes) FROM shift_reports s WHERE s.user_id = :user_id AND s.start_date BETWEEN DATE(:fromDate) AND DATE(:endDate)", nativeQuery = true)
+    Long getTotalHoursBetweenDates(@Param("user_id") Long user_id, @Param("fromDate") String fromDate, @Param("endDate") String endDate);
 }

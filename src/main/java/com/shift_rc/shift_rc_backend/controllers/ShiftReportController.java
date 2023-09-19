@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Logger;
 
 @CrossOrigin
 @RestController
@@ -110,7 +111,8 @@ public class ShiftReportController {
 
     @GetMapping("/payperiod")
     @PreAuthorize("hasRole('ROLE_USER')")
-    public ResponseEntity<?> getPayPeriod(@RequestHeader("Authorization") String authorization, @RequestBody PayPeriodRequest payPeriodRequest) {
+    public ResponseEntity<?> getPayPeriod(@RequestHeader("Authorization") String authorization, @RequestParam String fromDate,
+                                          @RequestParam String toDate, @RequestParam Double wagePerHour) {
 
         String token = jwtUtils.parseJwt(authorization);
 
@@ -119,9 +121,9 @@ public class ShiftReportController {
         User user = userRepo.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Error: Username is not found"));
 
-        Long all_shifts_hours_in_minutes = shiftReportRepo.getTotalHoursBetweenDates(user.getId(), payPeriodRequest.getFromDate(), payPeriodRequest.getToDate());
+        Long all_shifts_hours_in_minutes = shiftReportRepo.getTotalHoursBetweenDates(user.getId(), fromDate, toDate);
 
-        Long totalPay = all_shifts_hours_in_minutes * payPeriodRequest.getWagePerHourInMinutes();
+        Double totalPay = all_shifts_hours_in_minutes * ( wagePerHour / 60 );
 
         return ResponseEntity.ok(totalPay);
     }
